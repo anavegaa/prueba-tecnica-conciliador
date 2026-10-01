@@ -1,0 +1,14 @@
+# Python
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.pytest_cache/
+*.pyc
+
+# Angular
+frontend/node_modules/
+frontend/dist/
+
+# Archivos temporales
+*.tmp
+*.log

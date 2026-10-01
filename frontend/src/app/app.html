@@ -1,0 +1,232 @@
+<div class="app-container">
+
+  <header class="header">
+    <div>
+      <h1>Conciliador de Facturas y Retenciones</h1>
+      <p>Validación automática de información contable y tributaria</p>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Carga de archivos -->
+    <section class="upload-card">
+      <h2>Cargar archivos</h2>
+
+      <p class="description">
+        Selecciona los archivos CSV de facturas y contabilidad para iniciar la conciliación.
+      </p>
+
+      <div class="files-container">
+
+        <div class="file-input">
+          <label for="facturas">Archivo de facturas</label>
+
+          <input
+            id="facturas"
+            type="file"
+            accept=".csv"
+            (change)="seleccionarFacturas($event)"
+          />
+
+          <span>
+            @if (archivoFacturas) {
+              {{ archivoFacturas.name }}
+            } @else {
+              Selecciona facturas.csv
+            }
+          </span>
+        </div>
+
+        <div class="file-input">
+          <label for="contabilidad">Archivo de contabilidad</label>
+
+          <input
+            id="contabilidad"
+            type="file"
+            accept=".csv"
+            (change)="seleccionarContabilidad($event)"
+          />
+
+          <span>
+            @if (archivoContabilidad) {
+              {{ archivoContabilidad.name }}
+            } @else {
+              Selecciona contabilidad.csv
+            }
+          </span>
+        </div>
+
+      </div>
+
+      <button
+        class="primary-button"
+        [disabled]="!archivoFacturas || !archivoContabilidad || cargando"
+        (click)="conciliar()"
+      >
+        @if (cargando) {
+          Procesando...
+        } @else {
+          Conciliar archivos
+        }
+      </button>
+
+      @if (cargando) {
+        <p class="loading-message">
+          Procesando los archivos y realizando la conciliación...
+        </p>
+      }
+
+      @if (error) {
+        <div class="error-message">
+          {{ error }}
+        </div>
+      }
+
+    </section>
+
+
+    <!-- Resumen -->
+    @if (respuesta) {
+
+      <section class="summary-section">
+        <h2>Resumen de conciliación</h2>
+
+        <div class="summary-cards">
+
+          <div class="summary-card">
+            <span class="card-label">Total facturas</span>
+            <strong>{{ respuesta.resumen.total_facturas }}</strong>
+          </div>
+
+          <div class="summary-card success">
+            <span class="card-label">Correctas</span>
+            <strong>{{ respuesta.resumen.correctas }}</strong>
+          </div>
+
+          <div class="summary-card danger">
+            <span class="card-label">Inconsistencias</span>
+            <strong>{{ respuesta.resumen.inconsistencias }}</strong>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- Resultados -->
+      <section class="results-section">
+
+        <div class="results-header">
+
+          <div>
+            <h2>Detalle de resultados</h2>
+            <p>
+              Consulta el resultado de la conciliación por factura.
+            </p>
+          </div>
+
+          <select [(ngModel)]="filtroEstado">
+            <option value="Todos">Todos</option>
+            <option value="Correcta">Correcta</option>
+            <option value="Con inconsistencia">
+              Con inconsistencia
+            </option>
+          </select>
+
+        </div>
+
+
+        <div class="table-container">
+
+          <table>
+
+            <thead>
+              <tr>
+                <th>ID Factura</th>
+                <th>Estado</th>
+                <th>Causas</th>
+                <th>IVA esperado</th>
+                <th>IVA registrado</th>
+                <th>Total esperado</th>
+                <th>Total registrado</th>
+                <th>Contabilidad</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (resultado of resultadosFiltrados; track $index) {
+
+                <tr>
+
+                  <td>{{ resultado.id_factura }}</td>
+
+                  <td>
+                    @if (resultado.estado === 'Correcta') {
+
+                      <span class="status status-success">
+                        Correcta
+                      </span>
+
+                    } @else {
+
+                      <span class="status status-danger">
+                        Con inconsistencia
+                      </span>
+
+                    }
+                  </td>
+
+                  <td>
+                    @if (resultado.causas.length > 0) {
+                      {{ resultado.causas.join('; ') }}
+                    } @else {
+                      —
+                    }
+                  </td>
+
+                  <td>
+                    {{ formatearValor(resultado.iva_esperado) }}
+                  </td>
+
+                  <td>
+                    {{ formatearValor(resultado.iva_registrado) }}
+                  </td>
+
+                  <td>
+                    {{ formatearValor(resultado.total_esperado) }}
+                  </td>
+
+                  <td>
+                    {{ formatearValor(resultado.total_registrado) }}
+                  </td>
+
+                  <td>
+                    {{ resultado.estado_contabilidad || '—' }}
+                  </td>
+
+                </tr>
+
+              } @empty {
+
+                <tr>
+                  <td colspan="8">
+                    No hay resultados para el filtro seleccionado.
+                  </td>
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    }
+
+  </main>
+
+</div>
