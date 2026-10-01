@@ -45,6 +45,7 @@ analista-prueba/
 │
 ├── presentacion/
 └── README.md
+```
 
 ## Requisitos
 
@@ -59,7 +60,7 @@ Para ejecutar el proyecto se requiere:
 
 1. Abrir una terminal y ubicarse en la carpeta del backend:
 
-```powershell
+En powershell
 cd backend
 
 ## Crear el entorno virtual
@@ -90,7 +91,7 @@ http://127.0.0.1:8000/docs
 
 1. Abrir otra terminal y ubicarse en la carpeta del frontend:
 
-```powershell
+En powershell
 cd frontend
 
 ## Instalar dependencias
